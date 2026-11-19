@@ -1,4 +1,5 @@
 #define _GNU_SOURCE
+#include <strings.h>
 #include <signal.h>
 #include <sched.h>
 #include <sys/syscall.h>

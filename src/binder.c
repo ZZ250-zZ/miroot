@@ -1,6 +1,7 @@
 /* Copyright 2008 The Android Open Source Project
  */
 
+#include <strings.h>
 #include <signal.h>
 #include <errno.h>
 #include <fcntl.h>

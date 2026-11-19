@@ -1,3 +1,4 @@
+#include <strings.h>
 #include <string.h>
 #include <stdlib.h>
 #include <signal.h>
@@ -19,6 +20,9 @@
 #include "log.h"
 #include "endpoint.h"
 #include "pending_node.h"
+
+/* bionic does not expose clone() without _GNU_SOURCE on this NDK. */
+extern int clone(int (*fn)(void *), void *child_stack, int flags, void *arg, ...);
 
 
 static struct endpoint_handle *endpoints = NULL;

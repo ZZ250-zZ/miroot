@@ -1,3 +1,4 @@
+#include <strings.h>
 #include <string.h>
 #include <signal.h>
 #include <stdio.h>

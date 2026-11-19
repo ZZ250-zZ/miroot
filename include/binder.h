@@ -114,6 +114,12 @@ int binder_transaction(struct binder_state *bs, bool one_way, uint32_t handle, v
 void binder_free_buffer(struct binder_state *bs, binder_uintptr_t buffer_to_free);
 void binder_free_buffers(struct binder_state *bs, binder_uintptr_t buffer_to_free);
 
+/* Prototypes previously relying on implicit declarations (old NDK only). */
+struct binder_transaction_data;
+void bio_init_from_txn(struct binder_io *io, struct binder_transaction_data *txn);
+void binder_send_reply(struct binder_state *bs, struct binder_io *reply, binder_uintptr_t buffer_to_free, int status);
+uint32_t binder_read_next(struct binder_state *bs, void *data, uint32_t *remaining, uint32_t *consumed);
+
 
 
 #endif
