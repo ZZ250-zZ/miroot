@@ -1,3 +1,4 @@
+#include <signal.h>
 #include <errno.h>
 #include <stdint.h>
 #include <stdbool.h>

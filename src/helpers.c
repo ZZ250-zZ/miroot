@@ -1,4 +1,6 @@
 #define _GNU_SOURCE	1
+#include <stdlib.h>
+#include <signal.h>
 #include <sched.h>
 #include <dlfcn.h>
 #include <unistd.h>

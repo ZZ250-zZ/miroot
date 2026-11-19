@@ -33,13 +33,13 @@ jobs:
             APP_ABI=arm64-v8a \
             NDK_OUT=./obj \
             NDK_LIBS_OUT=./libs \
-            -j4 > build.log 2>&1
+            -j4 -k > build.log 2>&1
           rc=$?
           cat build.log
           if [ "$rc" -ne 0 ]; then
             echo "::error::ndk-build exited with code $rc"
-            { head -15 build.log; echo '--- error lines ---'; grep -i -E 'error|fatal|missing separator|undefined reference|No such file|not found|recipe commences' build.log | head -20; echo '--- tail ---'; tail -15 build.log; } \
-              | sed 's/%/%25/g' | head -50 | while IFS= read -r line; do
+            grep -i -E 'error:|fatal error:|undefined reference|No such file|not found' build.log \
+              | sed 's/%/%25/g' | sort -u | head -60 | while IFS= read -r line; do
                   echo "::error::$line"
                 done
             exit "$rc"

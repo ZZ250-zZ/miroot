@@ -1,3 +1,7 @@
+#include <string.h>
+#include <stdlib.h>
+#include <signal.h>
+#include <unistd.h>
 #include <sched.h>
 #include <stdio.h>
 #include <pthread.h>
