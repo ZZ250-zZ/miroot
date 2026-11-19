@@ -11,6 +11,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Normalize line endings
+        run: |
+          find . -path ./.git -prune -o -type f \( -name '*.mk' -o -name 'Makefile' -o -name '*.c' -o -name '*.h' -o -name '*.yml' -o -name '*.md' -o -name '.gitattributes' \) -print0 \
+            | xargs -0 -r sed -i 's/\r$//'
+
       - name: Locate preinstalled Android NDK
         run: |
           NDK="${ANDROID_NDK_LATEST_HOME:-$(ls -d /usr/local/lib/android/sdk/ndk/* | sort -V | tail -1)}"
@@ -20,6 +25,7 @@ jobs:
 
       - name: Build arm64 executable
         run: |
+          set +e
           "$NDK/ndk-build" \
             NDK_PROJECT_PATH=. \
             APP_BUILD_SCRIPT=./Android.mk \
@@ -27,7 +33,17 @@ jobs:
             APP_ABI=arm64-v8a \
             NDK_OUT=./obj \
             NDK_LIBS_OUT=./libs \
-            -j4
+            -j4 > build.log 2>&1
+          rc=$?
+          cat build.log
+          if [ "$rc" -ne 0 ]; then
+            echo "::error::ndk-build exited with code $rc"
+            { head -15 build.log; echo '--- error lines ---'; grep -i -E 'error|fatal|missing separator|undefined reference|No such file|not found|recipe commences' build.log | head -20; echo '--- tail ---'; tail -15 build.log; } \
+              | sed 's/%/%25/g' | head -50 | while IFS= read -r line; do
+                  echo "::error::$line"
+                done
+            exit "$rc"
+          fi
           ls -l libs/arm64-v8a/poc
           file libs/arm64-v8a/poc
 
